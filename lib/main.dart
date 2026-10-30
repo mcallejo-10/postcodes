@@ -1,6 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:postcodes/screens/search_screen.dart';
+import 'package:postcodes/styles/app_styles.dart';
 
 void main() {
+  if (kReleaseMode) {
+    debugPrint = (message, {wrapWidth}) {};
+  } else {
+    debugPrint = (message, {wrapWidth}) {
+      final lines = '$message'.split('\n').map((line) => '[Postcodes] $line');
+      debugPrintThrottled(lines.join('\n'), wrapWidth: wrapWidth);
+    };
+  }
   runApp(const PostcodeApp());
 }
 
@@ -9,8 +20,15 @@ class PostcodeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Roboto',
+        appBarTheme: AppBarTheme(
+          backgroundColor: AppStyles.primary,
+          foregroundColor: AppStyles.secondary,
+        ),
+      ),
+      home: const SearchScreen(),
     );
   }
 }

@@ -16,8 +16,10 @@ class SearchResponse {
   SearchResponse({required this.results, required this.generationtimeMs});
 
   factory SearchResponse.fromJson(Map<String, dynamic> json) => SearchResponse(
-    results: List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
-    generationtimeMs: json["generationtime_ms"]?.toDouble(),
+    results: List<Result>.from(
+      (json["results"] ?? []).map((x) => Result.fromJson(x)),
+    ),
+    generationtimeMs: json["generationtime_ms"]?.toDouble() ?? 0.0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -31,48 +33,48 @@ class Result {
   final String name;
   final double latitude;
   final double longitude;
-  final int elevation;
-  final String featureCode;
-  final String countryCode;
-  final int admin1Id;
-  final int admin2Id;
-  final int admin3Id;
-  final String timezone;
-  final int population;
-  final List<String> postcodes;
-  final int countryId;
-  final String country;
-  final String admin1;
-  final String admin2;
-  final String admin3;
+  final double? elevation;
+  final String? featureCode;
+  final String? countryCode;
+  final int? admin1Id;
+  final int? admin2Id;
+  final int? admin3Id;
+  final String? timezone;
+  final int? population;
+  final List<String>? postcodes;
+  final int? countryId;
+  final String? country;
+  final String? admin1;
+  final String? admin2;
+  final String? admin3;
 
   Result({
     required this.id,
     required this.name,
     required this.latitude,
     required this.longitude,
-    required this.elevation,
-    required this.featureCode,
-    required this.countryCode,
-    required this.admin1Id,
-    required this.admin2Id,
-    required this.admin3Id,
-    required this.timezone,
-    required this.population,
-    required this.postcodes,
-    required this.countryId,
-    required this.country,
-    required this.admin1,
-    required this.admin2,
-    required this.admin3,
+    this.elevation,
+    this.featureCode,
+    this.countryCode,
+    this.admin1Id,
+    this.admin2Id,
+    this.admin3Id,
+    this.timezone,
+    this.population,
+    this.postcodes,
+    this.countryId,
+    this.country,
+    this.admin1,
+    this.admin2,
+    this.admin3,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    id: json["id"],
+    id: json["id"] as int,
     name: json["name"],
-    latitude: json["latitude"]?.toDouble(),
-    longitude: json["longitude"]?.toDouble(),
-    elevation: json["elevation"],
+    latitude: (json["latitude"] as num).toDouble(),
+    longitude: (json["longitude"] as num).toDouble(),
+    elevation: (json["elevation"] as num?)?.toDouble(),
     featureCode: json["feature_code"],
     countryCode: json["country_code"],
     admin1Id: json["admin1_id"],
@@ -80,7 +82,9 @@ class Result {
     admin3Id: json["admin3_id"],
     timezone: json["timezone"],
     population: json["population"],
-    postcodes: List<String>.from(json["postcodes"].map((x) => x)),
+    postcodes: json["postcodes"] == null
+        ? null
+        : List<String>.from(json["postcodes"].map((x) => x)),
     countryId: json["country_id"],
     country: json["country"],
     admin1: json["admin1"],
@@ -101,7 +105,9 @@ class Result {
     "admin3_id": admin3Id,
     "timezone": timezone,
     "population": population,
-    "postcodes": List<dynamic>.from(postcodes.map((x) => x)),
+    "postcodes": postcodes == null
+        ? null
+        : List<dynamic>.from(postcodes!.map((x) => x)),
     "country_id": countryId,
     "country": country,
     "admin1": admin1,
