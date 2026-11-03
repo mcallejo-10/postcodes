@@ -4,8 +4,22 @@ class AppStyles {
   static final Color primary = const Color.fromARGB(255, 1, 61, 139);
   static final Color secondary = const Color.fromARGB(255, 158, 158, 158);
 
+  static final Padding headingPadding = Padding(padding: EdgeInsets.all(8));
+  static final Padding padding = Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+  );
+
+  static const TextStyle appBarTitle = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
   static const TextStyle heading = TextStyle(
     fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle subheading = TextStyle(
+    fontSize: 20,
     fontWeight: FontWeight.bold,
   );
   static const TextStyle label = TextStyle(

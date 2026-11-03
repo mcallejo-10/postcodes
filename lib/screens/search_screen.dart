@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:postcodes/models/search_response.dart';
+import 'package:postcodes/screens/place_detail_screen.dart';
 import 'package:postcodes/services/serch_service.dart';
 import 'package:postcodes/styles/app_styles.dart';
 
@@ -31,6 +32,13 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {});
   }
 
+  void openPlaceDetail(Result place) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PlaceDetailScreen(place: place)),
+    );
+  }
+
   Future<SearchResponse> loadData(String query) async {
     try {
       SearchResponse result = await SearchService().getBody(query);
@@ -46,12 +54,12 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('CODIS POSTALS'),
-        titleTextStyle: AppStyles.heading,
+        titleTextStyle: AppStyles.appBarTitle,
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: AppStyles.headingPadding.padding,
             child: Form(
               child: TextField(
                 controller: searchController,
@@ -101,17 +109,32 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemCount: results.length,
                     itemBuilder: (context, index) {
                       final Result r = results[index];
-                      return ListTile(
-                        title: Text('${r.name}, ${r.admin2}, ${r.admin1}'),
-                        subtitle: Text(
-                          'Codis postals del municipi: \n ${(r.postcodes ?? []).join(', ')}',
+                      return Padding(
+                        padding: AppStyles.padding.padding,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () => openPlaceDetail(r),
+                              child: Text(
+                                '${r.name}, ${r.admin2}, ${r.admin1}',
+                              ),
+                            ),
+                            AppStyles.smallSeparator,
+                            Text(
+                              (r.postcodes?.length ?? 0) == 1
+                                  ? 'Codi postal del municipi:'
+                                  : 'Codis postals del municipi:',
+                            ),
+                            Text((r.postcodes ?? []).join(', ')),
+                          ],
                         ),
                       );
                     },
                   ),
                 );
               }
-              return const SizedBox.shrink();
+              return const SizedBox.expand();
             },
           ),
         ],
