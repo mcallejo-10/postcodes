@@ -12,4 +12,14 @@ class AppStyles {
     fontSize: 16,
     fontWeight: FontWeight.w500,
   );
+  static const TextStyle error = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: Colors.red,
+  );
+
+  static final Widget tinySeparator = SizedBox(height: 4, width: 4);
+  static final Widget smallSeparator = SizedBox(height: 8, width: 8);
+  static final Widget mediumSeparator = SizedBox(height: 16, width: 16);
+  static final Widget bigSeparator = SizedBox(height: 24, width: 24);
 }

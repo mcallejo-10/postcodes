@@ -11,12 +11,10 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final TextEditingController searchController = TextEditingController();
   String query = '';
-  String searchControllerText() {
-    return ('search?name=$query&language=ca&countryCode=ES');
-  }
+  bool hasSearched = false;
 
+  final TextEditingController searchController = TextEditingController();
   late Future<SearchResponse> data;
 
   @override
@@ -28,21 +26,19 @@ class _SearchScreenState extends State<SearchScreen> {
   void clearSearch() {
     searchController.clear();
     query = '';
+    hasSearched = false;
+    data = Future.value(SearchResponse(results: [], generationtimeMs: 0.0));
     setState(() {});
   }
 
   Future<SearchResponse> loadData(String query) async {
     try {
       SearchResponse result = await SearchService().getBody(query);
-      debugPrint(
-        'RESULT: ${result.results.isNotEmpty ? result.results[0].admin1 : 'No results'}',
-      );
-      debugPrint('query: $query');
       return (result);
     } catch (e) {
       debugPrint('Error in load data: $e');
+      rethrow;
     }
-    return SearchResponse(results: [], generationtimeMs: 0.0);
   }
 
   @override
@@ -64,10 +60,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 },
                 onSubmitted: (value) {
                   data = loadData(query.toString());
+                  hasSearched = true;
                   setState(() {});
                 },
                 decoration: InputDecoration(
-                  labelText: 'Codi postal',
+                  labelText: 'Codi postal/municipi',
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.clear),
                     onPressed: () {
@@ -75,31 +72,29 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                   ),
                 ),
-                keyboardType: TextInputType.number,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Form(
-              child: TextField(
-                decoration: const InputDecoration(labelText: 'Municipi'),
                 keyboardType: TextInputType.text,
               ),
             ),
           ),
-          SizedBox(height: 48),
+          AppStyles.mediumSeparator,
+
           FutureBuilder(
             future: data,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
-                return Text('Error-: ${snapshot.error}');
+                debugPrint('Error in FutureBuilder: ${snapshot.error}');
+                return Text(
+                  'Error carregant les dades',
+                  style: AppStyles.error,
+                );
               } else if (snapshot.hasData) {
                 final results = snapshot.data!.results;
                 if (results.isEmpty) {
-                  return const Text('Introdueix un codi postal, o municipi');
+                  return hasSearched
+                      ? const Text('No s\'han trobat resultats')
+                      : const Text('Introdueix un codi postal, o municipi');
                 }
                 return Expanded(
                   child: ListView.builder(
@@ -107,8 +102,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemBuilder: (context, index) {
                       final Result r = results[index];
                       return ListTile(
-                        title: Text(r.name),
-                        subtitle: Text((r.postcodes ?? []).join(', ')),
+                        title: Text('${r.name}, ${r.admin2}, ${r.admin1}'),
+                        subtitle: Text(
+                          'Codis postals del municipi: \n ${(r.postcodes ?? []).join(', ')}',
+                        ),
                       );
                     },
                   ),
